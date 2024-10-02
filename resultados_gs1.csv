@@ -1,0 +1,3 @@
+Código GS1,Resultado
+(01)12345678901234(17)240228(10)ABC123(30)5,Código válido.
+(01)12345678901234(17)250229(10)LOT156(30)509,Código inválido: El segmento (17) debe contener exactamente 6 dígitos y ser una fecha válida.

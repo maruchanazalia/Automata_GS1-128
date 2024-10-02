@@ -1,4 +1,6 @@
 import re
+import csv
+
 
 class GS1EvaluatorDFA:
     def __init__(self):
@@ -45,9 +47,15 @@ class GS1EvaluatorDFA:
         return False
 
     def _validate_segment10(self, gs1_code: str) -> bool:
-        """Valida el segmento (10) para que contenga 3 letras y 3 números."""
+        """Valida el segmento (10) para que contenga exactamente 3 letras seguidas de 3 números."""
         segment10 = re.search(r"\(10\)([A-Z]{3}\d{3})", gs1_code)
-        return segment10 is not None
+        if segment10:
+            value = segment10.group(1)
+            print(f"Segmento (10) encontrado: {value}")  
+            if len(value) == 6: 
+                return True
+            print(f"Segmento (10) incorrecto: {value}")  
+        return False
 
     def _validate_segment30(self, gs1_code: str) -> bool:
         """Valida el segmento (30) para que contenga entre 1 y 3 dígitos y que no exceda 999."""
@@ -88,6 +96,17 @@ class GS1EvaluatorDFA:
         for code in gs1_codes:
             result = self.validate_code(code)
             results.append(result)
+
+        #csv
+        with open('resultados_gs1.csv', mode='w', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file)
+                writer.writerow(['Código GS1', 'Resultado'])  
+
+                for code in gs1_codes:
+                    result = self.validate_code(code)
+                    results.append(result)
+                    writer.writerow([code, result])
+
 
         # DEVUELME EL PERRO RESULTADO VAMOSSS
         if all("Código válido." in res for res in results):
