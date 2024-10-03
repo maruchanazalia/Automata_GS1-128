@@ -1,14 +1,11 @@
-from api.service import GS1EvaluatorDFA
+from fastapi import HTTPException
+from .service import GS1EvaluatorService
 
-async def validate_gs1_code(input_string):
-    dfa = GS1EvaluatorDFA()
-    validation_result = dfa.process(input_string) 
-    
-    if validation_result["status"] == "success":
-        return {"status": "success", "message": "Código GS1-128 válido"}
-    else:
-        return {
-            "status": "error",
-            "message": "Código GS1-128 inválido",
-            "details": validation_result["details"] 
-        }
+class GS1Controller:
+    @staticmethod
+    def evaluate_code(code: str) -> dict:
+        if not code:
+            raise HTTPException(status_code=400, detail="El código GS1-128 no puede estar vacío")
+        
+        result = GS1EvaluatorService.evaluate_code(code)
+        return {"code": code, "result": result}
