@@ -1,19 +1,12 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from typing import List
-from .service import GS1EvaluatorService
+from fastapi import APIRouter, UploadFile, File  # Asegúrate de importar correctamente
+from .service import GS1Service  # Ajusta la ruta según tu estructura
 
 router = APIRouter()
+gs1_service = GS1Service()
 
-@router.post("/evaluate-gs1-file/")
-async def evaluate_file(file: UploadFile = File(...)):
-    """
-    Evalúa múltiples códigos GS1-128 desde un archivo de texto.
-    El archivo debe contener códigos separados por saltos de línea.
-    """
-    try:
-        content = await file.read()
-        file_content = content.decode('utf-8')  # Asegura que se procese como texto
-        results = GS1EvaluatorService.evaluate_file(file_content)
-        return results
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error al procesar el archivo: {e}")
+@router.post("/GS1-128/")
+async def validate_codes(file: UploadFile = File(...)):
+    contents = await file.read()  # Lee el contenido del archivo
+    codes = contents.decode("utf-8").splitlines()  # Divide el contenido en líneas
+    results = {code: gs1_service.validate_gs1_code(code) for code in codes}  # Valida cada código
+    return results

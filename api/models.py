@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
-class GS1Input(BaseModel):
-    gs1_string: str
+class CodeRequest(BaseModel):
+    codes: List[str]

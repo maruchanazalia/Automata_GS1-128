@@ -1,217 +1,169 @@
-class GS1EvaluatorDFA:
+class GS1Service:
+    
     def __init__(self):
-        self.state = 'q0'
-        self.final_states = {'q61'}  
-
-    def is_valid_letter(self, char):
-        return char.isalpha()
-
-    def is_valid_number(self, char):
-        return char.isdigit()
-
-    def transition(self, current_state, char):
-        print(f"Transición: Estado actual: {current_state}, Carácter: {char}")
-
-        if current_state == 'q0':
-            if char == '(':
-                return 'q1'
-        elif current_state == 'q1':
-            if char == '0':
-                return 'q2'
-        elif current_state == 'q2':
-            if char == '1':
-                return 'q3'
-        elif current_state == 'q3':
-            if char == ')':
-                return 'q4'
-        elif current_state in ['q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 
-                               'q11', 'q12', 'q13', 'q14', 'q15', 'q16', 'q17']:
-            if self.is_valid_number(char):
-                return f'q{int(current_state[1:]) + 1}'
-
-        ##(17)
-        elif current_state == 'q18':
-            if char == '(':
-                return 'q19'
-        elif current_state == 'q19':
-            if char == '1':
-                return 'q20'
-        elif current_state == 'q20':
-            if char == '7':
-                return 'q21' 
-        elif current_state == 'q21':
-             if char == ')':
-                return 'q22' 
-             
-
-        ##validacion7-7
-        elif current_state == 'q22':  
-            if char in '02468':  #YY
-                return 'q24'
-            elif char in '13579':  ##YY
-                return 'q25'
-        elif current_state == 'q24':  
-            if char in '048':  
-                return 'q26'
-            elif char in '1235679':  
-                return 'q27'
-        elif current_state == 'q25':  
-            if char in '026':  
-                return 'q30'
-            elif char in '13579': 
-                return 'q31'
-
-        # MM
-        elif current_state == 'q26': 
-            if char == '0':
-                return 'q28'
-            elif char == '1':
-                return 'q29'
-        elif current_state == 'q27': 
-            if char == '0':
-                return 'q32'
-            elif char == '1':
-                return 'q33'
+        self.final_states = {58, 59, 60}  
+        self.transitions = {
+            (0, '('): 1,
+            (1, '0'): 2,
+            (2, '1'): 3,
+            (3, ')'): 4,
+            (4, '0-9'): 5,
+            (5, '0-9'): 6,
+            (6, '0-9'): 7,
+            (7, '0-9'): 8,
+            (8, '0-9'): 9,
+            (9, '0-9'): 10,
+            (10, '0-9'): 11,
+            (11, '0-9'): 12,
+            (12, '0-9'): 13,
+            (13, '0-9'): 14,
+            (14, '0-9'): 15,
+            (15, '0-9'): 16,
+            (16, '0-9'): 17,
+            (17, '0-9'): 18,
+            (18, '('): 19,
+            (19, '1'): 20,
+            (20, '7'): 21,
+            (21, ')'): 22,
+            (22, "0, 2, 4, 6, 8"): 23,  
+            (22, "1, 3, 5, 7, 9"): 24,  
+            (23, "0, 4, 8"): 25,     
+            (23, "1, 2, 3, 5, 6, 7, 9"): 26,  
+            (24, "2, 6"): 25,      
+            (24, "0, 1, 3, 4, 5, 7, 8, 9"): 26,  
+            (25, '0'): 27,
+            (25, '1'): 28,
+            (26, '1'): 28,
+            (26, '0'): 29,
+            (28, "0, 2"): 30,
+            (28, '1'): 32,
+            (27, "1, 3, 5, 7, 8"): 30,
+            (27, '2'): 31,
+            (27, "4, 6, 9"): 32,
+            (29, "1, 3, 5, 7, 8"): 30,
+            (29, "4, 6, 9"): 32,
+            (29, '2'): 33,
+            (30, '0'): 34,
+            (30, '3'): 35,
+            (30, "1, 2"): 36,
+            (31, '0'): 34,
+            (31, "1, 2"): 36,
+            (32, '0'): 34,
+            (32, "1, 2"): 36,
+            (32, '3'): 37,
+            (33, '0'): 34,
+            (33, '1'): 36,
+            (33, '2'): 38,
+            (34, '1, 2, 3, 4 ,5, 7, 8, 9'): 39,
+            (35, '0, 1'): 40,
+            (36, '0, 1, 2, 3, 4, 5, 6, 7, 8, 9 '): 41,
+            (37, '0'): 42,
+            (38, '0, 1, 2, 3, 4, 5, 6, 7, 8'): 43,
+            (39, '('): 44,
+            (40, '('): 44,
+            (41, '('): 44,
+            (42, '('): 44,
+            (43, '('): 44,
+            (44, '1'): 45,
+            (45, '0'): 46,
+            (46, ')'): 47,
+            (47, 'A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z'): 48,
+            (48, 'A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z'): 49,
+            (49, 'A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z'): 50,
+            (50, '0, 1, 2, 3, 4, 5, 6, 7, 8, 9 '): 51,
+            (51, '0, 1, 2, 3, 4, 5, 6, 7, 8, 9 '): 52,
+            (52, '0, 1, 2, 3, 4, 5, 6, 7, 8, 9 '): 53,
+            (53, '('): 54,
+            (54, '3'): 55,
+            (55, '0'): 56,
+            (56, ')'): 57,
+            (57, "1, 2, 3, 4, 5, 6, 7, 8, 9 , e"): 58,  # Estado final
+            (58, "0, 1, 2, 3, 4, 5, 6, 7, 8, 9 , e"): 59,  # Estado final
+            (58, '0, 1, 2, 3, 4, 5, 6, 7, 8, 9 '): 60,     # Estado final
+        }
         
-        # MM
-        elif current_state in ['q28', 'q29', 'q30', 'q31', 'q32', 'q33']:
-            if char in '123456789':
-                return 'q35' 
-            elif char == '0':
-                return 'q34'  # E,D
-        
-        
-        elif current_state == 'q35':  
-            if char in '123456789':  
-                return 'q40'
-            elif char == '0':  
-                 return 'q41'
-        
-        elif current_state == 'q36': 
-            if char in '0-9':
-                return 'q42'
+        self.add_range_transitions()
 
-        elif current_state == 'q37':  ## feb bi
-            if char in '0-9':
-                return 'q43'
-        elif current_state in ['q40', 'q41', 'q42', 'q43']:
-            return 'q45'  
-        
-        elif current_state == 'q45':
-            if char == '(':
-                return 'q46'
-        elif current_state == 'q46':
-            if char == '1':
-                return 'q47'
-        elif current_state == 'q47':
-            if char == '0':
-                return 'q48'
-        elif current_state == 'q48':
-            if char == ')':
-                return 'q49'
-        elif current_state in ['q49', 'q50', 'q51']: 
-            if self.is_valid_letter(char):
-                return f'q{int(current_state[1:]) + 1}'
-        elif current_state == 'q52':  
-            if self.is_valid_number(char):
-                return 'q53'
-        elif current_state == 'q53':
-            if self.is_valid_number(char):
-                return 'q54'
-        elif current_state == 'q54':
-            if self.is_valid_number(char):
-                return 'q55'
+    def add_range_transitions(self):
+        for i in range(10):
+            self.transitions[(4, str(i))] = 5
+            self.transitions[(5, str(i))] = 6
+            self.transitions[(6, str(i))] = 7
+            self.transitions[(7, str(i))] = 8
+            self.transitions[(8, str(i))] = 9
+            self.transitions[(9, str(i))] = 10
+            self.transitions[(10, str(i))] = 11
+            self.transitions[(11, str(i))] = 12
+            self.transitions[(12, str(i))] = 13
+            self.transitions[(13, str(i))] = 14
+            self.transitions[(14, str(i))] = 15
+            self.transitions[(15, str(i))] = 16
+            self.transitions[(16, str(i))] = 17
+            self.transitions[(17, str(i))] = 18
+            
+        for i in range(1, 10): 
+            self.transitions[(34, str(i))] = 39
+            self.transitions[(34, str(i))] = 40
+            self.transitions[(34, str(i))] = 41
+            self.transitions[(39, '0-9')] = 59  # Estado final
+            self.transitions[(41, '0-9')] = 60  # Estado final
 
-        # (30)
-        elif current_state == 'q55':
-            if char == '(':
-                return 'q56'
-        elif current_state == 'q56':
-            if char == '3':
-                return 'q57'
-        elif current_state == 'q57':
-            if char == '0':
-                return 'q58'
-        elif current_state == 'q58':
-            if char == ')':
-                return 'q59'
-            # 
-        elif current_state == 'q59':
-            if self.is_valid_number(char):  
-                return 'q60'  
-            elif char == 'e':  
-                return 'q62' 
+    def validate_gs1_code(self, code: str) -> dict:
+        current_state = 0 
+        year, month, day = '', '', ''  
+        is_date_segment = False 
 
-        elif current_state == 'q60':
-            if self.is_valid_number(char):
-                return 'q61'  
-            elif char == 'e':  
-                return 'q62'  
-
-        elif current_state == 'q61':
-            if self.is_valid_number(char): 
-                return 'q62' 
-            elif char == 'e':  
-                return 'q62'  
-        elif current_state == 'q62':
-            return 'valid' 
-
-
-        print(f"Carácter no esperado: {char} en el estado {current_state}, transición inválida.")
-        return 'invalido'
-
-    def evaluate_gs1(self, code):
-        self.state = 'q0'
-        print(f"Evaluando código: {code}")
-        
         for char in code:
-            self.state = self.transition(self.state, char)
-            
-            # Si hay una transición inválida, se detiene la evaluación
-            if self.state == 'invalido':
-                print("Código GS1-128 inválido")
+            found_transition = False
+            for (state, input_char), next_state in self.transitions.items():
+                if state == current_state:
+                    if char in input_char.replace(" ", "").split(','):
+                        current_state = next_state
+                        found_transition = True
+
+                        if current_state == 17: 
+                            is_date_segment = True
+                        break
+
+            if not found_transition:
+                print(f"Transición no válida: estado={current_state}, carácter='{char}'")
+                return {"code": code, "is_valid": False, "message": "Transición no válida"}
+
+            if is_date_segment:
+                if char.isdigit():
+                    if len(year) < 2:
+                        year += char  
+                    elif len(month) < 2:
+                        month += char  
+                    elif len(day) < 2:
+                        day += char  
+                    if len(year) == 2 and len(month) == 2 and len(day) == 2:
+                        if not self.validate_date(year, month, day):
+                            print(f"Fecha inválida: {year}-{month}-{day}")
+                            return {"code": code, "is_valid": False, "message": "Fecha inválida"}
+                        year, month, day = '', '', ''
+                        is_date_segment = False  
+
+        if current_state in self.final_states:
+            return {"code": code, "is_valid": True, "message": "Código válido"}
+        else:
+            print(f"Código inválido: estado final={current_state}")
+            return {"code": code, "is_valid": False, "message": "Código inválido"}
+
+    def validate_date(self, year: str, month: str, day: str) -> bool:
+        if month == '02':
+            if day > '29':
                 return False
-            
-            # Si alcanza un estado final, se detiene la evaluación
-            if self.state in self.final_states:
-                print(f"Estado final alcanzado: {self.state}")
-                print("Código GS1-128 válido")
-                return True
-        
-        # Verificación final después de procesar todos los caracteres
-        if self.state in self.final_states:
-            print("Código GS1-128 válido")
+            elif day == '29':
+                return (int(year) % 4 == 0 and int(year) % 100 != 0) or (int(year) % 400 == 0)
             return True
-        else:
-            print("Código GS1-128 inválido")
+        elif month in ['04', '06', '09', '11'] and day > '30':
             return False
-
-
-
-
-class GS1EvaluatorService:
-    @staticmethod
-    def evaluate_code(code: str) -> str:
-        dfa = GS1EvaluatorDFA()
-        cleaned_code = code.strip()
-        if dfa.evaluate_gs1(cleaned_code):
-            return "Código GS1-128 válido"
-        else:
-            return "Código GS1-128 inválido"
-
-    @staticmethod
-    def evaluate_file(file_content: str):
-        results = []
-        codes = file_content.strip().splitlines()
-        
-        for code in codes:
-            result = GS1EvaluatorService.evaluate_code(code)
-            results.append({"code": code, "result": result})
-        
-        return results
+        return True
 
 
 # Ejemplo de uso
-code_to_evaluate = "(01)12345678901234(17)240229(10)LOT156(30)56"
-result = GS1EvaluatorService.evaluate_code(code_to_evaluate)
-print(result)
+gs1_service = GS1Service()
+codigo_a_validar = "(01)12345678901234(17)000229(10)LOT156(30)5"
+resultado = gs1_service.validate_gs1_code(codigo_a_validar)
+print(resultado)
