@@ -1,3 +1,6 @@
+import csv
+from io import StringIO 
+
 class GS1Service:
     
     def __init__(self):
@@ -160,6 +163,23 @@ class GS1Service:
         elif month in ['04', '06', '09', '11'] and day > '30':
             return False
         return True
+    
+
+    def generate_csv_report(self, codes: list, file_path: str) -> None:
+            with open(file_path, mode='w', newline='') as file:
+                fieldnames = ['code', 'is_valid', 'message']
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer.writeheader()
+
+                for code in codes:
+                    validation_result = self.validate_gs1_code(code)
+                    writer.writerow({
+                        'code': code,
+                        'is_valid': validation_result['is_valid'],
+                        'message': validation_result['message']
+                    })
+
+
 
 
 # Ejemplo de uso
